@@ -4,61 +4,59 @@
 
 ### 基本类型 
 
-+ byte/8 
+```java
+byte/8 
+char/16 
+short/16 
+int/32 
+float/32 
+long/64 
+double/64 
+boolean/~ 
+```
 
-+ char/16 
 
-+ short/16 
+​         boolean 只有两个值：true、false，可以使⽤ 1 bit 来存储，但是具体⼤⼩没有明确规定。JVM 会在编译时期将 boolean 类型的数据转换为 int，使⽤ 1 来表示 true，0 表示 false。JVM ⽀持 boolean 数组， 但是是通过读写 byte 数组来实现的。 
 
-+ int/32 
 
-+ float/32 
 
-+ long/64 
+### 包装类型 
 
-+ double/64 
-
-+ boolean/~ 
-
-boolean 只有两个值：true、false，可以使⽤ 1 bit 来存储，但是具体⼤⼩没有明确规定。JVM 会在编 
-
-译时期将 boolean 类型的数据转换为 int，使⽤ 1 来表示 true，0 表示 false。JVM ⽀持 boolean 数组， 
-
-但是是通过读写 byte 数组来实现的。 
-
-Primitive Data Types 
-
-The Java® Virtual Machine Specification 
-
-包装类型 
-
-基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使⽤⾃动装箱与拆箱完成。 
+​		基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使⽤⾃动装箱与拆箱完成。 
 
 Autoboxing and Unboxing 
 
-缓存池 
+#### 缓存池 
 
 new Integer(123) 与 Integer.valueOf(123) 的区别在于： 
 
-new Integer(123) 每次都会新建⼀个对象； 
+```java
+		new Integer(123) 每次都会新建⼀个对象； 
 
-Integer.valueOf(123) 会使⽤缓存池中的对象，多次调⽤会取得同⼀个对象的引⽤。 
+​		Integer.valueOf(123) 会使⽤缓存池中的对象，多次调⽤会取得同⼀个对象的引⽤。 
+    
 
-Integer x = 2; // 装箱 调⽤了 Integer.valueOf(2) 
+​		Integer x = 2; // 装箱 调⽤了 Integer.valueOf(2) 
 
-int y = x; // 拆箱 调⽤了 X.intValue()Integer x = new Integer(123); 
+​		int y = x; // 拆箱 调⽤了 X.intValue()
 
-Integer y = new Integer(123); 
+		
+​		Integer x = new Integer(123); 
 
-System.out.println(x == y); // false 
+​		Integer y = new Integer(123); 
 
-Integer z = Integer.valueOf(123); 
+​		System.out.println(x == y); // false 
 
-Integer k = Integer.valueOf(123); 
+​		Integer z = Integer.valueOf(123); 
 
-System.out.println(z == k); // true 
+​		Integer k = Integer.valueOf(123); 
 
-valueOf() ⽅法的实现⽐较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。 
+​		System.out.println(z == k); // true 
+```
+
+
+
+​		valueOf() ⽅法的实现⽐较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。 
 
 public static Integer valueOf(int i) { 
 
