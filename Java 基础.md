@@ -24,19 +24,16 @@ boolean/~
 
 ​		基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使⽤⾃动装箱与拆箱完成。 
 
-Autoboxing and Unboxing 
-
 #### 缓存池 
 
 new Integer(123) 与 Integer.valueOf(123) 的区别在于： 
 
+<font color=red>new Integer(123) 每次都会新建⼀个对象；</font>
+
+<font color=red>Integer.valueOf(123) 会使⽤缓存池中的对象，多次调⽤会取得同⼀个对象的引⽤。</font>
+
 ```java
-		new Integer(123) 每次都会新建⼀个对象； 
-
-​		Integer.valueOf(123) 会使⽤缓存池中的对象，多次调⽤会取得同⼀个对象的引⽤。 
-    
-
-​		Integer x = 2; // 装箱 调⽤了 Integer.valueOf(2) 
+		Integer x = 2; // 装箱 调⽤了 Integer.valueOf(2) 
 
 ​		int y = x; // 拆箱 调⽤了 X.intValue()
 
@@ -54,19 +51,15 @@ new Integer(123) 与 Integer.valueOf(123) 的区别在于：
 ​		System.out.println(z == k); // true 
 ```
 
+​		valueOf() ⽅法的实现⽐较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。(装箱操作) 
 
-
-​		valueOf() ⽅法的实现⽐较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。 
-
-public static Integer valueOf(int i) { 
-
- if (i >= IntegerCache.low && i <= IntegerCache.high) 
-
- return IntegerCache.cache[i + (-IntegerCache.low)]; 
-
- return new Integer(i); 
-
-} 
+```java
+    public static Integer valueOf(int i) {
+        if (i >= IntegerCache.low && i <= IntegerCache.high)
+            return IntegerCache.cache[i + (-IntegerCache.low)];
+        return new Integer(i);
+    }
+```
 
 在 Java 8 中，Integer 缓存池的⼤⼩默认为 -128~127。 
 
