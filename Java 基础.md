@@ -426,246 +426,208 @@ private ⽅法隐式地被指定为 final，**如果在⼦类中定义的⽅法�
 
 **1.** 静态变量  
 
-​		静态变量：⼜称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在⼀份。 
++ 静态变量：⼜称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在⼀份。 
 
-​		实例变量：每创建⼀个实例就会产⽣⼀个实例变量，它与该实例同⽣共死。 
++ 实例变量：每创建⼀个实例就会产⽣⼀个实例变量，它与该实例同⽣共死。 
 
-final int x = 1; 
+```java
+public class A {
+	private int x; // 实例例变量量
+	private static int y; // 静态变量量
+	public static void main(String[] args) {
+		// int x = A.x; // Non-static field 'x' cannot be referenced from a static context
+		A a = new A();
+		int x = a.x;
+		int y = A.y;
+	}
+}
+```
 
-// x = 2; // cannot assign value to final variable 'x' 
 
-final A y = new A(); 
-
-y.a = 1;public class A { 
-
- private int x; // 实例变量 
-
- private static int y; // 静态变量 
-
- public static void main(String[] args) { 
-
- // int x = A.x; // Non-static field 'x' cannot be referenced from 
-
-a static context 
-
- A a = new A(); 
-
- int x = a.x; 
-
- int y = A.y; 
-
- } 
-
-} 
 
 **2.** 静态⽅法  
 
-静态⽅法在类加载的时候就存在了，它不依赖于任何实例。所以静态⽅法必须有实现，也就是说它不能 
+​		静态⽅法在类加载的时候就存在了，它不依赖于任何实例。所以静态⽅法必须有实现，也就是说它不能是抽象⽅法。 
 
-是抽象⽅法。 
+```java
+public abstract class A {
+	public static void func1(){
+	}
+	// public abstract static void func2(); // Illegal combination of
+modifiers: 'abstract' and 'static'
+}
+```
 
-public abstract class A { 
+​		只能访问所属类的静态字段和静态⽅法，⽅法中不能有 this 和 super 关键字，因此这两个关键字与具体对象关联。 
 
- public static void func1(){ 
+```java
+public class A {
+	private static int x;
+	private int y;
+	public static void func1(){
+		int a = x;
+		// int b = y; // Non-static field 'y' cannot be referenced from a static context
+		// int b = this.y; // 'A.this' cannot be referenced from a
+static context
+	}
+}
+```
 
- } 
-
- // public abstract static void func2(); // Illegal combination of 
-
-modifiers: 'abstract' and 'static' 
-
-} 
-
-只能访问所属类的静态字段和静态⽅法，⽅法中不能有 this 和 super 关键字，因此这两个关键字与具体 
-
-对象关联。 
-
-public class A { 
-
- private static int x; 
-
- private int y; 
-
- public static void func1(){ 
-
- int a = x; 
-
- // int b = y; // Non-static field 'y' cannot be referenced from a 
-
-static context 
-
- // int b = this.y; // 'A.this' cannot be referenced from a 
-
-static context 
-
- } 
-
-}**3.** 静态语句块  
+**3.** 静态语句块  
 
 静态语句块在类初始化时运⾏⼀次。 
 
-public class A { 
+```java
+public class A {
+	static {
+		System.out.println("123");
+	}
+	public static void main(String[] args) {
+		A a1 = new A();
+		A a2 = new A();
+	}
+}
+```
 
- static { 
-
- System.out.println("123"); 
-
- } 
-
- public static void main(String[] args) { 
-
- A a1 = new A(); 
-
- A a2 = new A(); 
-
- } 
-
-} 
-
-123 
+> 123
 
 **4.** 静态内部类  
 
-⾮静态内部类依赖于外部类的实例，也就是说需要先创建外部类实例，才能⽤这个实例去创建⾮静态内 
+​		⾮静态内部类依赖于外部类的实例，也就是说需要先创建外部类实例，才能⽤这个实例去创建⾮静态内部类。⽽静态内部类不需要。 
 
-部类。⽽静态内部类不需要。 
+```java
+public class OuterClass {
+	class InnerClass {
+	}
+	static class StaticInnerClass {
+	}
+	public static void main(String[] args) {
+		// InnerClass innerClass = new InnerClass(); // 'OuterClass.this'cannot be referenced from a static context
+		OuterClass outerClass = new OuterClass();
+		InnerClass innerClass = outerClass.new InnerClass();
+		StaticInnerClass staticInnerClass = new StaticInnerClass();
+	}
+}
+```
 
-public class OuterClass { 
+​		静态内部类不能访问外部类的⾮静态的变量和⽅法。 
 
- class InnerClass { 
+**5.** 静态导包 
 
- } 
-
- static class StaticInnerClass { 
-
- } 
-
- public static void main(String[] args) { 
-
- // InnerClass innerClass = new InnerClass(); // 'OuterClass.this' 
-
-cannot be referenced from a static context 
-
- OuterClass outerClass = new OuterClass(); 
-
- InnerClass innerClass = outerClass.new InnerClass(); 
-
- StaticInnerClass staticInnerClass = new StaticInnerClass(); 
-
- } 
-
-} 
-
-静态内部类不能访问外部类的⾮静态的变量和⽅法。 
-
-**5.** 静态导包 在使⽤静态变量和⽅法时不⽤再指明 ClassName，从⽽简化代码，但可读性⼤⼤降低。 
+​		在使⽤静态变量和⽅法时不⽤再指明 ClassName，从⽽简化代码，但可读性⼤⼤降低。 
 
 **6.** 初始化顺序  
 
-静态变量和静态语句块优先于实例变量和普通语句块，静态变量和静态语句块的初始化顺序取决于它们 
+​		静态变量和静态语句块优先于实例变量和普通语句块，静态变量和静态语句块的初始化顺序取决于它们在代码中的顺序。 
 
-在代码中的顺序。 
+```java
+public static String staticField = "静态变量";
+```
+
+```java
+static {
+	System.out.println("静态语句块");
+}
+```
+
+```java
+public String field = "实例例变量";
+```
+
+```java
+{
+	System.out.println("普通语句块");
+}
+```
 
 最后才是构造函数的初始化。 
 
+```java
+public InitialOrderTest() {
+	System.out.println("构造函数");
+}
+```
+
 存在继承的情况下，初始化顺序为： 
 
-⽗类（静态变量、静态语句块） 
++ ⽗类（静态变量、静态语句块） 
 
-⼦类（静态变量、静态语句块） 
++ ⼦类（静态变量、静态语句块） 
 
-⽗类（实例变量、普通语句块） 
++ ⽗类（实例变量、普通语句块） 
 
-⽗类（构造函数） 
++ ⽗类（构造函数） 
 
-⼦类（实例变量、普通语句块） 
++ ⼦类（实例变量、普通语句块） 
 
-⼦类（构造函数） 
++ ⼦类（构造函数） 
 
 ## 五、**Object** 通⽤⽅法 
 
-概览 
+### 概览 
 
-import static com.xxx.ClassName.* 
+```java
+public native int hashCode()
+public boolean equals(Object obj)
+protected native Object clone() throws CloneNotSupportedException
+public String toString()
+public final native Class<?> getClass()
+protected void finalize() throws Throwable {}
+public final native void notify()
+public final native void notifyAll()
+public final native void wait(long timeout) throws InterruptedException
+public final void wait(long timeout, int nanos) throws InterruptedException
+public final void wait() throws InterruptedException
+```
 
-public static String staticField = "静态变量"; 
-
-static { 
-
- System.out.println("静态语句块"); 
-
-} 
-
-public String field = "实例变量"; 
-
-{ 
-
- System.out.println("普通语句块"); 
-
-} 
-
-public InitialOrderTest() { 
-
- System.out.println("构造函数"); 
-
-}**equals()** 
+### **equals()** 
 
 **1.** 等价关系  
 
 两个对象具有等价关系，需要满⾜以下五个条件： 
 
-Ⅰ ⾃反性 
+**Ⅰ ⾃反性**
 
-Ⅱ 对称性 
+```java
+x.equals(x); // true
+```
 
-Ⅲ 传递性 
+**Ⅱ 对称性** 
 
-public native int hashCode() 
+```java
+x.equals(y) == y.equals(x); // true
+```
 
-public boolean equals(Object obj) 
+**Ⅲ 传递性** 
 
-protected native Object clone() throws CloneNotSupportedException 
+```java
+if (x.equals(y) && y.equals(z))
+x.equals(z); // true;
+```
 
-public String toString() 
-
-public final native Class<?> getClass() 
-
-protected void finalize() throws Throwable {} 
-
-public final native void notify() 
-
-public final native void notifyAll() 
-
-public final native void wait(long timeout) throws InterruptedException 
-
-public final void wait(long timeout, int nanos) throws InterruptedException 
-
-public final void wait() throws InterruptedException 
-
-x.equals(x); // true 
-
-x.equals(y) == y.equals(x); // true 
-
-if (x.equals(y) && y.equals(z)) 
-
- x.equals(z); // true;Ⅳ ⼀致性 
+**Ⅳ ⼀致性** 
 
 多次调⽤ equals() ⽅法结果不变 
 
+```java
 x.equals(y) == x.equals(y); // true 
+```
 
-Ⅴ 与 null 的⽐较 
+**Ⅴ 与 null 的⽐较** 
 
 对任何不是 null 的对象 x 调⽤ x.equals(null) 结果都为 false 
 
+```java
 x.equals(null); // false; 
+```
 
 **2.** 等价与相等  
 
-对于基本类型，== 判断两个值是否相等，基本类型没有 equals() ⽅法。 
++ 对于基本类型，== 判断两个值是否相等，基本类型没有 equals() ⽅法。 
 
-对于引⽤类型，== 判断两个变量是否引⽤同⼀个对象，⽽ equals() 判断引⽤的对象是否等价。 
++ 对于引⽤类型，== 判断两个变量是否引⽤同⼀个对象，⽽ equals() 判断引⽤的对象是否等价。 
 
+```java
 Integer x = new Integer(1); 
 
 Integer y = new Integer(1); 
@@ -673,102 +635,81 @@ Integer y = new Integer(1);
 System.out.println(x.equals(y)); // true 
 
 System.out.println(x == y); // false 
+```
 
 **3.** 实现  
 
-检查是否为同⼀个对象的引⽤，如果是直接返回 true； 
++ 检查是否为同⼀个对象的引⽤，如果是直接返回 true； 
 
-检查是否是同⼀个类型，如果不是，直接返回 false； 
++ 检查是否是同⼀个类型，如果不是，直接返回 false； 
 
-将 Object 对象进⾏转型； 
++ 将 Object 对象进⾏转型； 
 
-判断每个关键域是否相等。 
++ 判断每个关键域是否相等。 
 
+```java
 public class EqualExample { 
+	private int x; 
+	private int y; 
+	private int z; 
+	public EqualExample(int x, int y, int z) { 
+		this.x = x; 
+		this.y = y; 
+		this.z = z; 
+	} 
 
- private int x; 
-
- private int y; 
-
- private int z; 
-
- public EqualExample(int x, int y, int z) { 
-
- this.x = x; 
-
- this.y = y; 
-
- this.z = z; 
-
- } 
-
- @Override**hashCode()** 
-
-hashCode() 返回哈希值，⽽ equals() 是⽤来判断两个对象是否等价。等价的两个对象散列值⼀定相 
-
-同，但是散列值相同的两个对象不⼀定等价，这是因为计算哈希值具有随机性，两个值不同的对象可能 
-
-计算出相同的哈希值。 
-
-在覆盖 equals() ⽅法时应当总是覆盖 hashCode() ⽅法，保证等价的两个对象哈希值也相等。 
-
-HashSet 和 HashMap 等集合类使⽤了 hashCode() ⽅法来计算对象应该存储的位置，因此要将对象添 
-
-加到这些集合类中，需要让对应的类实现 hashCode() ⽅法。 
-
-下⾯的代码中，新建了两个等价的对象，并将它们添加到 HashSet 中。我们希望将这两个对象当成⼀样 
-
-的，只在集合中添加⼀个对象。但是 EqualExample 没有实现 hashCode() ⽅法，因此这两个对象的哈 
-
-希值是不同的，最终导致集合添加了两个等价的对象。 
-
-理想的哈希函数应当具有均匀性，即不相等的对象应当均匀分布到所有可能的哈希值上。这就要求了哈 
-
-希函数要把所有域的值都考虑进来。可以将每个域都当成 R 进制的某⼀位，然后组成⼀个 R 进制的整 
-
-数。 
-
-R ⼀般取 31，因为它是⼀个奇素数，如果是偶数的话，当出现乘法溢出，信息就会丢失，因为与 2 相 
-
-乘相当于向左移⼀位，最左边的位丢失。并且⼀个数与 31 相乘可以转换成移位和减法： 31*x == 
-
-(x<<5)-x ，编译器会⾃动进⾏这个优化。 
-
- public boolean equals(Object o) { 
-
- if (this == o) return true; 
-
- if (o == null || getClass() != o.getClass()) return false; 
-
- EqualExample that = (EqualExample) o; 
-
- if (x != that.x) return false; 
-
- if (y != that.y) return false; 
-
- return z == that.z; 
-
- } 
-
+	@Override
+	public boolean equals(Object o) { 
+		if (this == o) return true; 
+		if (o == null || getClass() != o.getClass()) return false; 
+		EqualExample that = (EqualExample) o; 
+		if (x != that.x) return false; 
+		if (y != that.y) return false; 
+		return z == that.z; 
+	} 
 } 
 
-EqualExample e1 = new EqualExample(1, 1, 1); 
 
-EqualExample e2 = new EqualExample(1, 1, 1); 
+```
 
-System.out.println(e1.equals(e2)); // true 
+### **hashCode()** 
 
-HashSet<EqualExample> set = new HashSet<>(); 
+​		hashCode() 返回哈希值，⽽ equals() 是⽤来判断两个对象是否等价。等价的两个对象散列值⼀定相同，但是散列值相同的两个对象不⼀定等价，这是因为计算哈希值具有随机性，两个值不同的对象可能计算出相同的哈希值。 
 
-set.add(e1); 
+​		在覆盖 equals() ⽅法时应当总是覆盖 hashCode() ⽅法，保证等价的两个对象哈希值也相等。 
 
-set.add(e2); 
+​		HashSet 和 HashMap 等集合类使⽤了 hashCode() ⽅法来计算对象应该存储的位置，因此要将对象添加到这些集合类中，需要让对应的类实现 hashCode() ⽅法。 
 
-System.out.println(set.size()); // 2**toString()** 
+​		下⾯的代码中，新建了两个等价的对象，并将它们添加到 HashSet 中。我们希望将这两个对象当成⼀样的，只在集合中添加⼀个对象。但是 EqualExample 没有实现 hashCode() ⽅法，因此这两个对象的哈希值是不同的，最终导致集合添加了两个等价的对象。 
 
-默认返回 ToStringExample@4554617c 这种形式，其中 @ 后⾯的数值为散列码的⽆符号⼗六进制表 
+```java
+EqualExample e1 = new EqualExample(1, 1, 1);
+EqualExample e2 = new EqualExample(1, 1, 1);
+System.out.println(e1.equals(e2)); // true
+HashSet<EqualExample> set = new HashSet<>();
+set.add(e1);
+set.add(e2);
+System.out.println(set.size()); // 2
+```
 
-示。 
+​		理想的哈希函数应当具有均匀性，即不相等的对象应当均匀分布到所有可能的哈希值上。这就要求了哈希函数要把所有域的值都考虑进来。可以将每个域都当成 R 进制的某⼀位，然后组成⼀个 R 进制的整数。 
+
+​		R ⼀般取 31，因为它是⼀个奇素数，如果是偶数的话，当出现乘法溢出，信息就会丢失，因为与 2 相乘相当于向左移⼀位，最左边的位丢失。并且⼀个数与 31 相乘可以转换成移位和减法： 31*x == (x<<5)-x ，编译器会⾃动进⾏这个优化。 
+
+```java
+@Override
+public int hashCode() {
+    int result = 17;
+    result = 31 * result + x;
+    result = 31 * result + y;
+    result = 31 * result + z;
+    return result;
+}
+```
+
+### toString()	
+
+​		默认返回 ToStringExample@4554617c 这种形式，其中 @ 后⾯的数值为散列码的⽆符号⼗六进制表示。 
 
 **clone()** 
 
@@ -778,39 +719,7 @@ clone() 是 Object 的 protected ⽅法，它不是 public，⼀个类不显式�
 
 去调⽤该类实例的 clone() ⽅法。 
 
-@Override 
 
-public int hashCode() { 
-
- int result = 17; 
-
- result = 31 * result + x; 
-
- result = 31 * result + y; 
-
- result = 31 * result + z; 
-
- return result; 
-
-} 
-
-public class ToStringExample { 
-
- private int number; 
-
- public ToStringExample(int number) { 
-
- this.number = number; 
-
- } 
-
-} 
-
-ToStringExample example = new ToStringExample(123); 
-
-System.out.println(example.toString()); 
-
-ToStringExample@4554617c 
 
 public class CloneExample { 
 
