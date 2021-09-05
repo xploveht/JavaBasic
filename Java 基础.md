@@ -190,333 +190,245 @@ public final class String
 
 ### **String Pool** 
 
-​		字符串常量池（String Pool）保存着所有字符串字⾯量（literal strings），这些字⾯量在编译时期就确定。不仅如此，**<font color=red>还可以使⽤ String 的 intern() ⽅法在运⾏过程将字符串添加到 String Pool 中</font>**。当⼀个字符串调⽤ intern() ⽅法时，如果 String Pool 中已经存在⼀个字符串和该字符串值相等（使⽤ 
+​		字符串常量池（String Pool）保存着所有字符串字⾯量（literal strings），这些字⾯量在编译时期就确定。不仅如此，**<font color=red>还可以使⽤ String 的 intern() ⽅法在运⾏过程将字符串添加到 String Pool 中</font>**。当⼀个字符串调⽤ intern() ⽅法时，如果 String Pool 中已经存在⼀个字符串和该字符串值相等（使⽤equals() ⽅法进⾏确定），那么就会返回 String Pool 中字符串的引⽤；否则，就会在 String Pool 中添加⼀个新的字符串，并返回这个新字符串的引⽤。 
 
-equals() ⽅法进⾏确定），那么就会返回 String Pool 中字符串的引⽤；否则，就会在 String Pool 中添 
+​		下⾯示例中，s1 和 s2 采⽤ new String() 的⽅式新建了两个不同字符串，⽽ s3 和 s4 是通过 s1.intern() 和 s2.intern() ⽅法取得同⼀个字符串引⽤。intern() ⾸先把 "aaa" 放到String Pool 中，然后返回这个字符串引⽤，因此 s3 和 s4 引⽤的是同⼀个字符串。 
 
-加⼀个新的字符串，并返回这个新字符串的引⽤。 
+```java
+String s1 = new String("aaa");
+String s2 = new String("aaa");
+System.out.println(s1 == s2); // false
+String s3 = s1.intern();
+String s4 = s2.intern();
+System.out.println(s3 == s4); // true
+```
 
-下⾯示例中，s1 和 s2 采⽤ new String() 的⽅式新建了两个不同字符串，⽽ s3 和 s4 是通过 s1.intern() 
+​		如果是采⽤ "bbb" 这种字⾯量的形式创建字符串，会⾃动地将字符串放⼊ String Pool 中。
 
-和 s2.intern() ⽅法取得同⼀个字符串引⽤。intern() ⾸先把 "aaa" 放到 String Pool 中，然后返回这个字 
+ ```java
+String s5 = "bbb";
+String s6 = "bbb";
+System.out.println(s5 == s6); // true
+ ```
 
-符串引⽤，因此 s3 和 s4 引⽤的是同⼀个字符串。 
+​		在 Java 7 之前，String Pool 被放在运⾏时常量池中，它属于永久代。⽽在 Java 7，String Pool 被移到 堆中。这是因为永久代的空间有限，在⼤量使⽤字符串的场景下会导致 OutOfMemoryError 错误。 
 
-如果是采⽤ "bbb" 这种字⾯量的形式创建字符串，会⾃动地将字符串放⼊ String Pool 中。 
+ [深入解析String#intern](https://tech.meituan.com/2014/03/06/in-depth-understanding-string-intern.html)
 
-在 Java 7 之前，String Pool 被放在运⾏时常量池中，它属于永久代。⽽在 Java 7，String Pool 被移到 
+### **new String("abc")** 
 
-堆中。这是因为永久代的空间有限，在⼤量使⽤字符串的场景下会导致 OutOfMemoryError 错误。 
+​		使⽤这种⽅式⼀共会创建两个字符串对象（前提是 String Pool 中还没有 "abc" 字符串对象）。 
 
-StackOverflow : What is String interning? 
++ "abc" 属于字符串字⾯量，因此编译时期会在 String Pool 中创建⼀个字符串对象，指向这个 "abc" 字符串字⾯量； 
 
-深⼊解析 String#intern 
-
-**new String("abc")** 
-
-使⽤这种⽅式⼀共会创建两个字符串对象（前提是 String Pool 中还没有 "abc" 字符串对象）。 
-
-"abc" 属于字符串字⾯量，因此编译时期会在 String Pool 中创建⼀个字符串对象，指向这个 "abc" 
-
-字符串字⾯量； 
-
-⽽使⽤ new 的⽅式会在堆中创建⼀个字符串对象。 
++ ⽽使⽤ new 的⽅式会在堆中创建⼀个字符串对象。 
 
 创建⼀个测试类，其 main ⽅法中使⽤这种⽅式来创建字符串对象。 
 
-String s1 = new String("aaa"); 
+```java
+public class NewStringTest {
+	public static void main(String[] args) {
+		String s = new String("abc");
+	}
+}
+```
 
-String s2 = new String("aaa"); 
+​		使⽤ **javap -verbose** 进⾏反编译，得到以下内容： 
 
-System.out.println(s1 == s2); // false 
+```java
+// ...
+Constant pool:
+// ...
+	#2 = Class #18 // java/lang/String
+	#3 = String #19 // abc
+// ...
+	#18 = Utf8 java/lang/String
+	#19 = Utf8 abc
+// ...
+	public static void main(java.lang.String[]);
+		descriptor: ([Ljava/lang/String;)V
+		flags: ACC_PUBLIC, ACC_STATIC
+		Code:
+			stack=3, locals=2, args_size=1
+				0: new #2 // class java/lang/String
+				3: dup
+				4: ldc #3 // String abc
+				6: invokespecial #4 // Method java/lang/String."
+<init>":(Ljava/lang/String;)V
+				9: astore_1
+// ...
+```
 
-String s3 = s1.intern(); 
+​		在 Constant Pool 中，#19 存储这字符串字⾯量 "abc"，#3 是 String Pool 的字符串对象，它指向 #19 
 
-String s4 = s2.intern(); 
+这个字符串字⾯量。在 main ⽅法中，0: ⾏使⽤ new #2 在堆中创建⼀个字符串对象，并且使⽤ ldc #3 将 String Pool 中的字符串对象作为 String 构造函数的参数。 
 
-System.out.println(s3 == s4); // true 
+​		以下是 String 构造函数的源码，可以看到，在将⼀个字符串对象作为另⼀个字符串对象的构造函数参数 时，并不会完全复制 value 数组内容，⽽是都会指向同⼀个 value 数组。
 
-String s5 = "bbb"; 
+ ```java
+public String(String original) {
+	this.value = original.value;
+	this.hash = original.hash;
+}
+ ```
 
-String s6 = "bbb"; 
 
-System.out.println(s5 == s6); // true 
-
-public class NewStringTest { 
-
- public static void main(String[] args) { 
-
- String s = new String("abc"); 
-
- } 
-
-}使⽤ javap -verbose 进⾏反编译，得到以下内容： 
-
-在 Constant Pool 中，#19 存储这字符串字⾯量 "abc"，#3 是 String Pool 的字符串对象，它指向 #19 
-
-这个字符串字⾯量。在 main ⽅法中，0: ⾏使⽤ new #2 在堆中创建⼀个字符串对象，并且使⽤ ldc #3 
-
-将 String Pool 中的字符串对象作为 String 构造函数的参数。 
-
-以下是 String 构造函数的源码，可以看到，在将⼀个字符串对象作为另⼀个字符串对象的构造函数参数 
-
-时，并不会完全复制 value 数组内容，⽽是都会指向同⼀个 value 数组。 
 
 ## 三、运算 
 
-参数传递 
+### 参数传递 
 
 Java 的参数是以值传递的形式传⼊⽅法中，⽽不是引⽤传递。 
 
-// ... 
+以下代码中 Dog dog 的 dog 是⼀个指针，存储的是对象的地址。在将⼀个参数传⼊⼀个⽅法时，本质上是将对象的地址以值的⽅式传递到形参中。 
 
-Constant pool: 
+```java
+public class Dog {
+	String name;
+	Dog(String name) {
+		this.name = name;
+	}
+	String getName() {
+		return this.name;
+	}
+	void setName(String name) {
+		this.name = name;
+	}
+	String getObjectAddress() {
+		return super.toString();
+	}
+}
+```
 
-// ... 
+​		在⽅法中改变对象的字段值会改变原对象该字段值，因为引⽤的是同⼀个对象。 
 
- \#2 = Class #18 // java/lang/String 
+```java
+class PassByValueExample {
+	public static void main(String[] args) {
+		Dog dog = new Dog("A");
+		func(dog);
+		System.out.println(dog.getName()); // B
+	}
+	private static void func(Dog dog) {
+		dog.setName("B");
+	}
+}
+```
 
- \#3 = String #19 // abc 
+​		但是在⽅法中将指针引⽤了其它对象，那么此时⽅法⾥和⽅法外的两个指针指向了不同的对象，在⼀个指针改变其所指向对象的内容对另⼀个指针所指向的对象没有影响。 
 
-// ... 
+```java
+public class PassByValueExample {
+	public static void main(String[] args) {
+		Dog dog = new Dog("A");
+		System.out.println(dog.getObjectAddress()); // Dog@4554617c
+		func(dog);
+		System.out.println(dog.getObjectAddress()); // Dog@4554617c
+		System.out.println(dog.getName()); // A
+	}
+	private static void func(Dog dog) {
+		System.out.println(dog.getObjectAddress()); // Dog@4554617c
+		dog = new Dog("B");
+		System.out.println(dog.getObjectAddress()); // Dog@74a14482
+		System.out.println(dog.getName()); // B
+	}
+}  
+```
 
- \#18 = Utf8 java/lang/String 
 
- \#19 = Utf8 abc 
 
-// ... 
+### **float** 与 **double** 
 
- public static void main(java.lang.String[]); 
-
- descriptor: ([Ljava/lang/String;)V 
-
- flags: ACC_PUBLIC, ACC_STATIC 
-
- Code: 
-
- stack=3, locals=2, args_size=1 
-
- 0: new #2 // class java/lang/String 
-
- 3: dup 
-
- 4: ldc #3 // String abc 
-
- 6: invokespecial #4 // Method java/lang/String." 
-
-<init>":(Ljava/lang/String;)V 
-
- 9: astore_1 
-
-// ... 
-
-public String(String original) { 
-
- this.value = original.value; 
-
- this.hash = original.hash; 
-
-}以下代码中 Dog dog 的 dog 是⼀个指针，存储的是对象的地址。在将⼀个参数传⼊⼀个⽅法时，本质 
-
-上是将对象的地址以值的⽅式传递到形参中。 
-
-public class Dog { 
-
- String name; 
-
- Dog(String name) { 
-
- this.name = name; 
-
- } 
-
- String getName() { 
-
- return this.name; 
-
- } 
-
- void setName(String name) { 
-
- this.name = name; 
-
- } 
-
- String getObjectAddress() { 
-
- return super.toString(); 
-
- } 
-
-} 
-
-在⽅法中改变对象的字段值会改变原对象该字段值，因为引⽤的是同⼀个对象。 
-
-class PassByValueExample { 
-
- public static void main(String[] args) { 
-
- Dog dog = new Dog("A"); 
-
- func(dog); 
-
- System.out.println(dog.getName()); // B 
-
- } 
-
- private static void func(Dog dog) { 
-
- dog.setName("B"); 
-
- } 
-
-} 
-
-但是在⽅法中将指针引⽤了其它对象，那么此时⽅法⾥和⽅法外的两个指针指向了不同的对象，在⼀个 
-
-指针改变其所指向对象的内容对另⼀个指针所指向的对象没有影响。 
-
-public class PassByValueExample {StackOverflow: Is Java “pass-by-reference” or “pass-by-value”? 
-
-**float** 与 **double** 
-
-Java 不能隐式执⾏向下转型，因为这会使得精度降低。 
+​		Java 不能隐式执⾏向下转型，因为这会使得精度降低。 
 
 1.1 字⾯量属于 double 类型，不能直接将 1.1 直接赋值给 float 变量，因为这是向下转型。 
 
+```java
+// float f = 1.1;
+```
+
 1.1f 字⾯量才是 float 类型。 
 
-隐式类型转换 
+```java
+float f = 1.1f;
+```
 
-因为字⾯量 1 是 int 类型，它⽐ short 类型精度要⾼，因此不能隐式地将 int 类型向下转型为 short 类 
+### 隐式类型转换 
 
-型。 
+​		因为字⾯量 1 是 int 类型，它⽐ short 类型精度要⾼，因此不能隐式地将 int 类型向下转型为 short 类型。
+
+```java
+short s1 = 1;
+// s1 = s1 + 1;
+```
 
 但是使⽤ += 或者 ++ 运算符会执⾏隐式类型转换。 
 
- public static void main(String[] args) { 
+```java
+s1 += 1;
+s1++;
+```
 
- Dog dog = new Dog("A"); 
+ 上⾯的语句相当于将 s1 + 1 的计算结果进⾏了向下转型： 
 
- System.out.println(dog.getObjectAddress()); // Dog@4554617c 
+```java
+s1 = (short) (s1 + 1);
+```
 
- func(dog); 
+### **switch** 
 
- System.out.println(dog.getObjectAddress()); // Dog@4554617c 
+​		从 Java 7 开始，可以在 switch 条件判断语句中使⽤ String 对象。 
 
- System.out.println(dog.getName()); // A 
+```java
+String s = "a";
+switch (s) {
+	case "a":
+		System.out.println("aaa");
+		break;
+	case "b":
+		System.out.println("bbb");
+		break;
+}
+```
 
- } 
-
- private static void func(Dog dog) { 
-
- System.out.println(dog.getObjectAddress()); // Dog@4554617c 
-
- dog = new Dog("B"); 
-
- System.out.println(dog.getObjectAddress()); // Dog@74a14482 
-
- System.out.println(dog.getName()); // B 
-
- } 
-
-} 
-
-// float f = 1.1; 
-
-float f = 1.1f; 
-
-short s1 = 1; 
-
-// s1 = s1 + 1;上⾯的语句相当于将 s1 + 1 的计算结果进⾏了向下转型： 
-
-StackOverflow : Why don't Java's +=, -=, *=, /= compound assignment operators require casting? 
-
-**switch** 
-
-从 Java 7 开始，可以在 switch 条件判断语句中使⽤ String 对象。 
-
-switch 不⽀持 long、float、double，是因为 switch 的设计初衷是对那些只有少数⼏个值的类型进⾏等 
-
-值判断，如果值过于复杂，那么还是⽤ if ⽐较合适。 
-
-StackOverflow : Why can't your switch statement data type be long, Java? 
+​		switch 不⽀持 long、float、double，是因为 switch 的设计初衷是对那些只有少数⼏个值的类型进⾏等 值判断，如果值过于复杂，那么还是⽤ if ⽐较合适。 
 
 ## 四、关键字 
 
-s1 += 1; 
+### **final** 
 
-s1++; 
-
-s1 = (short) (s1 + 1); 
-
-String s = "a"; 
-
-switch (s) { 
-
- case "a": 
-
- System.out.println("aaa"); 
-
- break; 
-
- case "b": 
-
- System.out.println("bbb"); 
-
- break; 
-
-} 
-
-// long x = 111; 
-
-// switch (x) { // Incompatible types. Found: 'long', required: 'char, 
-
-byte, short, int, Character, Byte, Short, Integer, String, or an enum' 
-
-// case 111: 
-
-// System.out.println(111); 
-
-// break; 
-
-// case 222: 
-
-// System.out.println(222); 
-
-// break; 
-
-// }**final** 
-
-**1.** 数据  
+**1. 数据**  
 
 声明数据为常量，可以是编译时常量，也可以是在运⾏时被初始化后不能被改变的常量。 
 
-对于基本类型，final 使数值不变； 
++ 对于基本类型，final 使数值不变； 
 
-对于引⽤类型，final 使引⽤不变，也就不能引⽤其它对象，但是被引⽤的对象本身是可以修改的。 
++ 对于引⽤类型，final 使引⽤不变，也就不能引⽤其它对象，但是被引⽤的对象本身是可以修改的。 
 
-**2.** ⽅法  
+```java
+final int x = 1;
+// x = 2; // cannot assign value to final variable 'x'
+final A y = new A();
+y.a = 1;
+```
 
-声明⽅法不能被⼦类重写。 
+**2.⽅法**  
 
-private ⽅法隐式地被指定为 final，如果在⼦类中定义的⽅法和基类中的⼀个 private ⽅法签名相同，此 
+<font color=red>**声明⽅法不能被⼦类重写。** </font>
 
-时⼦类的⽅法不是重写基类⽅法，⽽是在⼦类中定义了⼀个新的⽅法。 
+private ⽅法隐式地被指定为 final，**如果在⼦类中定义的⽅法和基类中的⼀个 private ⽅法签名相同，此时⼦类的⽅法不是重写基类⽅法，⽽是在⼦类中定义了⼀个新的⽅法。** 
 
 **3.** 类  
 
 声明类不允许被继承。 
 
-**static** 
+### **static** 
 
 **1.** 静态变量  
 
-静态变量：⼜称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接 
+​		静态变量：⼜称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在⼀份。 
 
-通过类名来访问它。静态变量在内存中只存在⼀份。 
-
-实例变量：每创建⼀个实例就会产⽣⼀个实例变量，它与该实例同⽣共死。 
+​		实例变量：每创建⼀个实例就会产⽣⼀个实例变量，它与该实例同⽣共死。 
 
 final int x = 1; 
 
