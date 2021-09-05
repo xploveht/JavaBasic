@@ -150,63 +150,29 @@ public final class String
 }
 ```
 
-​		value 数组被声明为 final，这意味着 value 数组初始化之后就不能再引⽤其它数组。并且 String 内部没 
+​		value 数组被声明为 final，这意味着 value 数组初始化之后就不能再引⽤其它数组。并且 String 内部没有改变 value 数组的⽅法，因此可以保证 String 不可变。 
 
-有改变 value 数组的⽅法，因此可以保证 String 不可变。 
-
-不可变的好处 
+### 不可变的好处 
 
 **1.** 可以缓存 **hash** 值  
 
-因为 String 的 hash 值经常被使⽤，例如 String ⽤做 HashMap 的 key。不可变的特性可以使得 hash 
-
-值也不可变，因此只需要进⾏⼀次计算。 
+​		因为 String 的 hash 值经常被使⽤，例如 String ⽤做 HashMap 的 key。不可变的特性可以使得hash值也不可变，因此只需要进⾏⼀次计算。 
 
 **2. String Pool** 的需要  
 
-如果⼀个 String 对象已经被创建过了，那么就会从 String Pool 中取得引⽤。只有 String 是不可变的， 
+​		如果⼀个 String 对象已经被创建过了，那么就会从 String Pool 中取得引⽤。只有 String 是不可变的，才可能使⽤ String Pool。 
 
-才可能使⽤ String Pool。 
+![1630810471345](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\1630810471345.png)
 
-public final class String 
+**3.** 安全性  
 
- implements java.io.Serializable, Comparable<String>, CharSequence { 
-
- /** The value is used for character storage. */ 
-
- private final char value[]; 
-
-} 
-
-public final class String 
-
- implements java.io.Serializable, Comparable<String>, CharSequence { 
-
- /** The value is used for character storage. */ 
-
- private final byte[] value; 
-
- /** The identifier of the encoding used to encode the bytes in {@code 
-
-value}. */ 
-
- private final byte coder; 
-
-}**3.** 安全性  
-
-String 经常作为参数，String 不可变性可以保证参数不可变。例如在作为⽹络连接参数的情况下如果 
-
-String 是可变的，那么在⽹络连接过程中，String 被改变，改变 String 的那⼀⽅以为现在连接的是其它 
-
-主机，⽽实际情况却不⼀定是。 
+​		String 经常作为参数，String 不可变性可以保证参数不可变。例如在作为⽹络连接参数的情况下如果String 是可变的，那么在⽹络连接过程中，String 被改变，改变 String 的那⼀⽅以为现在连接的是其它主机，⽽实际情况却不⼀定是。 
 
 **4.** 线程安全  
 
-String 不可变性天⽣具备线程安全，可以在多个线程中安全地使⽤。 
+​		String 不可变性天⽣具备线程安全，可以在多个线程中安全地使⽤。 
 
-Program Creek : Why String is immutable in Java? 
-
-**String, StringBuffer and StringBuilder** 
+### **String, StringBuffer and StringBuilder** 
 
 **1.** 可变性  
 
