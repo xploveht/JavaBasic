@@ -61,109 +61,96 @@ new Integer(123) 与 Integer.valueOf(123) 的区别在于：
     }
 ```
 
-在 Java 8 中，Integer 缓存池的⼤⼩默认为 -128~127。 
+在 Java 8 中，Integer 缓存池的⼤⼩默认为 **-128~127**。 
 
-static final int low = -128; 
+```java
+    private static class IntegerCache {
+        static final int low = -128;
+        static final int high;
+        static final Integer cache[];
 
-static final int high; 
+        static {
+            // high value may be configured by property
+            int h = 127;
+            String integerCacheHighPropValue =
+                sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high");
+            if (integerCacheHighPropValue != null) {
+                try {
+                    int i = parseInt(integerCacheHighPropValue);
+                    i = Math.max(i, 127);
+                    // Maximum array size is Integer.MAX_VALUE
+                    h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+                } catch( NumberFormatException nfe) {
+                    // If the property cannot be parsed into an int, ignore it.
+                }
+            }
+            high = h;
 
-static final Integer cache[]; 
+            cache = new Integer[(high - low) + 1];
+            int j = low;
+            for(int k = 0; k < cache.length; k++)
+                cache[k] = new Integer(j++);
 
-static { 
+            // range [-128, 127] must be interned (JLS7 5.1.7)
+            assert IntegerCache.high >= 127;
+        }
 
- // high value may be configured by property 
+        private IntegerCache() {}
+    }
+```
 
- int h = 127; 
-
- String integerCacheHighPropValue = 
-
-  
-
-sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high"); 
-
- if (integerCacheHighPropValue != null) { 
-
- try { 
-
- int i = parseInt(integerCacheHighPropValue); 
-
- i = Math.max(i, 127); 
-
- // Maximum array size is Integer.MAX_VALUE 
-
- h = Math.min(i, Integer.MAX_VALUE - (-low) -1); 
-
- } catch( NumberFormatException nfe) { 
-
- // If the property cannot be parsed into an int, ignore it. 
-
- } 
-
- } 
-
- high = h; 
-
- cache = new Integer[(high - low) + 1]; 
-
- int j = low; 
-
- for(int k = 0; k < cache.length; k++)编译器会在⾃动装箱过程调⽤ valueOf() ⽅法，因此多个值相同且值在缓存池范围内的 Integer 实例使⽤ 
-
-⾃动装箱来创建，那么就会引⽤相同的对象。 
+ 		**<font color=red>编译器会在⾃动装箱过程调⽤ valueOf() ⽅法，因此多个值相同且值在缓存池范围内的 Integer 实例使⽤⾃动装箱来创建，那么就会引⽤相同的对象。</font>** 
 
 基本类型对应的缓冲池如下： 
 
-boolean values true and false 
++ boolean values true and false 
 
-all byte values 
++ all byte values 
 
-short values between -128 and 127 
++ short values between -128 and 127 
 
-int values between -128 and 127 
++ int values between -128 and 127 
 
-char in the range \u0000 to \u007F 
++ char in the range \u0000 to \u007F 
 
-在使⽤这些基本类型对应的包装类型时，如果该数值范围在缓冲池范围内，就可以直接使⽤缓冲池中的 
+​         在使⽤这些基本类型对应的包装类型时，如果该数值范围在缓冲池范围内，就可以直接使⽤缓冲池中的对象。 
 
-对象。 
-
-在 jdk 1.8 所有的数值类缓冲池中，Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 - 
-
-128，上界默认是 127，但是这个上界是可调的，在启动 jvm 的时候，通过 -XX:AutoBoxCacheMax= 
-
-<size> 来指定这个缓冲池的⼤⼩，该选项在 JVM 初始化的时候会设定⼀个名为 
-
-java.lang.IntegerCache.high 系统属性，然后 IntegerCache 初始化的时候就会读取该系统属性来决定上 
-
-界。 
+​       <font color=red>  在 jdk 1.8 所有的数值类缓冲池中，Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 -128，上界默认是 127，但是这个上界是可调的，在启动 jvm 的时候，通过 -XX:AutoBoxCacheMax= <size> 来指定这个缓冲池的⼤⼩，该选项在 JVM 初始化的时候会设定⼀个名为 java.lang.IntegerCache.high 系统属性，然后 IntegerCache 初始化的时候就会读取该系统属性来决定上界。 </font>
 
 StackOverflow : Differences between new Integer(123), Integer.valueOf(123) and just 123 
 
+[https://stackoverflow.com/questions/9030817/differences-between-new-integer123-integer-valueof123-and-just-123]
+
 ## ⼆、**String** 
 
-概览 
+### 概览 
 
-String 被声明为 final，因此它不可被继承。(Integer 等包装类也不能被继承） 
+​		String 被声明为 final，因此它不可被继承。(Integer 等包装类也不能被继承） 
 
-在 Java 8 中，String 内部使⽤ char 数组存储数据。 
+**在 Java 8 中，String 内部使⽤ char 数组存储数据。**
 
- cache[k] = new Integer(j++); 
+ ```java
+public final class String
+	implements java.io.Serializable, Comparable<String>, CharSequence {
+	/** The value is used for character storage. */
+	private final char value[];
+}
+ ```
 
- // range [-128, 127] must be interned (JLS7 5.1.7) 
+​		在 Java 9 之后，String 类的实现改⽤ byte 数组存储字符串，同时使⽤ coder 来标识使⽤了哪种编码。 
 
- assert IntegerCache.high >= 127; 
+```java
+public final class String
+	implements java.io.Serializable, Comparable<String>, CharSequence {
+	/** The value is used for character storage. */
+	private final byte[] value;
+    
+	/** The identifier of the encoding used to encode the bytes in 			{@codevalue}. */
+	private final byte coder;
+}
+```
 
-} 
-
-Integer m = 123; 
-
-Integer n = 123; 
-
-System.out.println(m == n); // true在 Java 9 之后，String 类的实现改⽤ byte 数组存储字符串，同时使⽤ coder 来标识使⽤了哪种编 
-
-码。 
-
-value 数组被声明为 final，这意味着 value 数组初始化之后就不能再引⽤其它数组。并且 String 内部没 
+​		value 数组被声明为 final，这意味着 value 数组初始化之后就不能再引⽤其它数组。并且 String 内部没 
 
 有改变 value 数组的⽅法，因此可以保证 String 不可变。 
 
