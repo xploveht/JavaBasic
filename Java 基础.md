@@ -176,25 +176,21 @@ public final class String
 
 **1.** 可变性  
 
-String 不可变 
++ String 不可变 
 
-StringBuffer 和 StringBuilder 可变 
++ StringBuffer 和 StringBuilder 可变 
 
 **2.** 线程安全  
 
-String 不可变，因此是线程安全的 
++ String 不可变，因此是线程安全的 
 
-StringBuilder 不是线程安全的 
++ StringBuilder 不是线程安全的 
 
-StringBuffer 是线程安全的，内部使⽤ synchronized 进⾏同步 
++ StringBuffer 是线程安全的，内部使⽤ synchronized 进⾏同步 
 
-StackOverflow : String, StringBuffer, and StringBuilder 
+### **String Pool** 
 
-**String Pool** 
-
-字符串常量池（String Pool）保存着所有字符串字⾯量（literal strings），这些字⾯量在编译时期就确 
-
-定。不仅如此，还可以使⽤ String 的 intern() ⽅法在运⾏过程将字符串添加到 String Pool 中。当⼀个字符串调⽤ intern() ⽅法时，如果 String Pool 中已经存在⼀个字符串和该字符串值相等（使⽤ 
+​		字符串常量池（String Pool）保存着所有字符串字⾯量（literal strings），这些字⾯量在编译时期就确定。不仅如此，**<font color=red>还可以使⽤ String 的 intern() ⽅法在运⾏过程将字符串添加到 String Pool 中</font>**。当⼀个字符串调⽤ intern() ⽅法时，如果 String Pool 中已经存在⼀个字符串和该字符串值相等（使⽤ 
 
 equals() ⽅法进⾏确定），那么就会返回 String Pool 中字符串的引⽤；否则，就会在 String Pool 中添 
 
