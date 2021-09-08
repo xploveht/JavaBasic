@@ -2,7 +2,7 @@ package DataType;
 
 public class Integertest {
     public static void main(String[] args) {
-        Integer x = 4; // ×°Ïä µ÷?ÁË Integer.valueOf(2)
-        int y = x; // ²ğÏä µ÷?ÁË X.intValue()
+        Integer x = 2; // è£…ç®± è°ƒâ½¤äº† Integer.valueOf(2)
+        int y = x; // æ‹†ç®± è°ƒâ½¤äº† X.intValue()
     }
 }
