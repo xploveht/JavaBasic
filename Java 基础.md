@@ -233,7 +233,9 @@ public class NewStringTest {
 }
 ```
 
-​		使⽤ **javap -verbose** 进⾏反编译，得到以下内容： 
+​		使⽤<font color=red>**javap -verbose**</font> 进⾏反编译，得到以下内容：
+
+​		**通过<font color=red>javap -c</font>可查看具体的调用** 
 
 ```java
 // ...
@@ -259,9 +261,7 @@ Constant pool:
 // ...
 ```
 
-​		在 Constant Pool 中，#19 存储这字符串字⾯量 "abc"，#3 是 String Pool 的字符串对象，它指向 #19 
-
-这个字符串字⾯量。在 main ⽅法中，0: ⾏使⽤ new #2 在堆中创建⼀个字符串对象，并且使⽤ ldc #3 将 String Pool 中的字符串对象作为 String 构造函数的参数。 
+​		在 Constant Pool 中，#19 存储这字符串字⾯量 "abc"，#3 是 String Pool 的字符串对象，它指向 #19这个字符串字⾯量。在 main ⽅法中，0: ⾏使⽤ new #2 在堆中创建⼀个字符串对象，并且使⽤ ldc #3 将 String Pool 中的字符串对象作为 String 构造函数的参数。 
 
 ​		以下是 String 构造函数的源码，可以看到，在将⼀个字符串对象作为另⼀个字符串对象的构造函数参数 时，并不会完全复制 value 数组内容，⽽是都会指向同⼀个 value 数组。
 
