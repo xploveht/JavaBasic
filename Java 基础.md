@@ -278,9 +278,9 @@ public String(String original) {
 
 ### 参数传递 
 
-Java 的参数是以值传递的形式传⼊⽅法中，⽽不是引⽤传递。 
+​		Java 的参数是**以值传递**的形式传⼊⽅法中，⽽**不是引⽤传递**。 
 
-以下代码中 Dog dog 的 dog 是⼀个指针，存储的是对象的地址。在将⼀个参数传⼊⼀个⽅法时，本质上是将对象的地址以值的⽅式传递到形参中。 
+​		以下代码中 Dog dog 的 dog 是⼀个指针，存储的是对象的地址。在将⼀个参数传⼊⼀个⽅法时，本质上是将**对象的地址以值的⽅式传递到形参中**。 
 
 ```java
 public class Dog {
@@ -339,9 +339,9 @@ public class PassByValueExample {
 
 ### **float** 与 **double** 
 
-​		Java 不能隐式执⾏向下转型，因为这会使得精度降低。 
+​		**Java 不能隐式执⾏向下转型，因为这会使得精度降低**。 
 
-1.1 字⾯量属于 double 类型，不能直接将 1.1 直接赋值给 float 变量，因为这是向下转型。 
++ 1.1 字⾯量属于 double 类型，不能直接将 1.1 直接赋值给 float 变量，因为这是向下转型。 
 
 ```java
 // float f = 1.1;
@@ -377,7 +377,7 @@ s1 = (short) (s1 + 1);
 
 ### **switch** 
 
-​		从 Java 7 开始，可以在 switch 条件判断语句中使⽤ String 对象。 
+​		从 Java 7 开始，**可以在 switch 条件判断语句中使⽤ String 对象**。 
 
 ```java
 String s = "a";
@@ -391,7 +391,7 @@ switch (s) {
 }
 ```
 
-​		switch 不⽀持 long、float、double，是因为 switch 的设计初衷是对那些只有少数⼏个值的类型进⾏等 值判断，如果值过于复杂，那么还是⽤ if ⽐较合适。 
+​		switch 不⽀持 long、float、double，是因为 switch 的设计初衷是对那些只有少数⼏个值的类型进⾏等值判断，如果值过于复杂，那么还是⽤ if ⽐较合适。 
 
 ## 四、关键字 
 
@@ -399,7 +399,7 @@ switch (s) {
 
 **1. 数据**  
 
-声明数据为常量，可以是编译时常量，也可以是在运⾏时被初始化后不能被改变的常量。 
+​		声明数据为常量，可以是编译时常量，也可以是在运⾏时被初始化后不能被改变的常量。 
 
 + 对于基本类型，final 使数值不变； 
 
@@ -414,13 +414,13 @@ y.a = 1;
 
 **2.⽅法**  
 
-<font color=red>**声明⽅法不能被⼦类重写。** </font>
+​		<font color=red>**声明⽅法不能被⼦类重写。** </font>
 
-private ⽅法隐式地被指定为 final，**如果在⼦类中定义的⽅法和基类中的⼀个 private ⽅法签名相同，此时⼦类的⽅法不是重写基类⽅法，⽽是在⼦类中定义了⼀个新的⽅法。** 
+​		private ⽅法隐式地被指定为 final，**如果在⼦类中定义的⽅法和基类中的⼀个 private ⽅法签名相同，此时⼦类的⽅法不是重写基类⽅法，⽽是在⼦类中定义了⼀个新的⽅法。** 
 
 **3.** 类  
 
-声明类不允许被继承。 
+​		声明类不允许被继承。 
 
 ### **static** 
 
@@ -443,8 +443,6 @@ public class A {
 }
 ```
 
-
-
 **2.** 静态⽅法  
 
 ​		静态⽅法在类加载的时候就存在了，它不依赖于任何实例。所以静态⽅法必须有实现，也就是说它不能是抽象⽅法。 
@@ -453,12 +451,12 @@ public class A {
 public abstract class A {
 	public static void func1(){
 	}
-	// public abstract static void func2(); // Illegal combination of
-modifiers: 'abstract' and 'static'
+	// public abstract static void func2(); 
+    // Illegal combination of modifiers: 'abstract' and 'static'
 }
 ```
 
-​		只能访问所属类的静态字段和静态⽅法，⽅法中不能有 this 和 super 关键字，因此这两个关键字与具体对象关联。 
+​		只能访问所属类的静态字段和静态⽅法，**⽅法中不能有 this 和 super 关键字，因此这两个关键字与具体对象关联**。 
 
 ```java
 public class A {
@@ -475,7 +473,7 @@ static context
 
 **3.** 静态语句块  
 
-静态语句块在类初始化时运⾏⼀次。 
+​		静态语句块在**类初始化**时运⾏⼀次。 
 
 ```java
 public class A {
@@ -502,7 +500,8 @@ public class OuterClass {
 	static class StaticInnerClass {
 	}
 	public static void main(String[] args) {
-		// InnerClass innerClass = new InnerClass(); // 'OuterClass.this'cannot be referenced from a static context
+		// InnerClass innerClass = new InnerClass(); 
+        // 'OuterClass.this'cannot be referenced from a static context
 		OuterClass outerClass = new OuterClass();
 		InnerClass innerClass = outerClass.new InnerClass();
 		StaticInnerClass staticInnerClass = new StaticInnerClass();
@@ -510,7 +509,7 @@ public class OuterClass {
 }
 ```
 
-​		静态内部类不能访问外部类的⾮静态的变量和⽅法。 
+​		**静态内部类不能访问外部类的⾮静态的变量和⽅法。** 
 
 **5.** 静态导包 
 
@@ -518,7 +517,7 @@ public class OuterClass {
 
 **6.** 初始化顺序  
 
-​		静态变量和静态语句块优先于实例变量和普通语句块，静态变量和静态语句块的初始化顺序取决于它们在代码中的顺序。 
+​		**静态变量和静态语句块优先于实例变量和普通语句块**，静态变量和静态语句块的初始化顺序取决于它们在代码中的顺序。 
 
 ```java
 public static String staticField = "静态变量";
@@ -674,11 +673,11 @@ public class EqualExample {
 
 ### **hashCode()** 
 
-​		hashCode() 返回哈希值，⽽ equals() 是⽤来判断两个对象是否等价。等价的两个对象散列值⼀定相同，但是散列值相同的两个对象不⼀定等价，这是因为计算哈希值具有随机性，两个值不同的对象可能计算出相同的哈希值。 
+​		hashCode() 返回哈希值，⽽ equals() 是⽤来判断两个对象是否等价。**等价的两个对象散列值⼀定相同，但是散列值相同的两个对象不⼀定等价，这是因为计算哈希值具有随机性，两个值不同的对象可能计算出相同的哈希值。** 
 
-​		在覆盖 equals() ⽅法时应当总是覆盖 hashCode() ⽅法，保证等价的两个对象哈希值也相等。 
+​		在<font color=red>**覆盖 equals() ⽅法时应当总是覆盖 hashCode() ⽅法**</font>，保证等价的两个对象哈希值也相等。 
 
-​		HashSet 和 HashMap 等集合类使⽤了 hashCode() ⽅法来计算对象应该存储的位置，因此要将对象添加到这些集合类中，需要让对应的类实现 hashCode() ⽅法。 
+​		HashSet 和 HashMap 等集合类使⽤了 hashCode() ⽅法来计算对象应该存储的位置，因此要**将对象添加到这些集合类中，需要让对应的类实现 hashCode() ⽅法。** 
 
 ​		下⾯的代码中，新建了两个等价的对象，并将它们添加到 HashSet 中。我们希望将这两个对象当成⼀样的，只在集合中添加⼀个对象。但是 EqualExample 没有实现 hashCode() ⽅法，因此这两个对象的哈希值是不同的，最终导致集合添加了两个等价的对象。 
 
@@ -709,7 +708,7 @@ public int hashCode() {
 
 ### toString()	
 
-​		默认返回 ToStringExample@4554617c 这种形式，其中 @ 后⾯的数值为散列码的⽆符号⼗六进制表示。 
+​		默认返回 ToStringExample@4554617c 这种形式，其中 **@ 后⾯的数值为散列码的⽆符号⼗六进制表示。** 
 
 **clone()** 
 
